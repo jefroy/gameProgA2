@@ -3,6 +3,7 @@ package tilegame;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
+import java.lang.annotation.AnnotationTypeMismatchException;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
@@ -24,10 +25,11 @@ public class ResourceManager {
     // host sprites used for cloning
     private Sprite playerSprite;
     private Sprite musicSprite;
-    private Sprite coinSprite;
+    private Sprite starSprite;
     private Sprite goalSprite;
     private Sprite grubSprite;
     private Sprite flySprite;
+    public String imgExt = ".png";
 
     /**
         Creates a new ResourceManager with the specified
@@ -39,14 +41,14 @@ public class ResourceManager {
         loadCreatureSprites();
         loadPowerUpSprites();
     }
-
-
-    public ResourceManager() {
-        //this.gc = gc;			// don't worry about graphics for now
-        loadTileImages();
-        loadCreatureSprites();
-        loadPowerUpSprites();
-    }
+//
+//
+//    public ResourceManager() {
+//        //this.gc = gc;			// don't worry about graphics for now
+//        loadTileImages();
+//        loadCreatureSprites();
+//        loadPowerUpSprites();
+//    }
 
 
     /**
@@ -181,7 +183,7 @@ public class ResourceManager {
 
                 // check if the char represents a sprite
                 else if (ch == 'o') {
-                    addSprite(newMap, coinSprite, x, y);
+                    addSprite(newMap, starSprite, x, y);
                 }
                 else if (ch == '!') {
                     addSprite(newMap, musicSprite, x, y);
@@ -243,7 +245,8 @@ public class ResourceManager {
         tiles = new ArrayList();
         char ch = 'A';
         while (true) {
-            String name = "tile_" + ch + ".png";
+            String path = "environment/";
+            String name = path + "tile_" + ch + ".png";
             File file = new File("images/" + name);
             if (!file.exists()) {
                 System.out.println("Image file could not be opened: " + name);
@@ -256,120 +259,202 @@ public class ResourceManager {
         }
     }
 
+    public void loadImages(Image[] images, String path){
+
+        for (int i = 0; i < images.length; i++) {
+            try {
+                images[i] = loadImage(path + i + imgExt);
+            }
+            catch (Exception e){
+                System.out.println(e);
+            }
+        }// end for
+    }
+
+    public void flipImages(Image[] flipped, Image[] og){
+        for (int i = 0; i < og.length; i++) {
+            flipped[i] = getFlippedImage(og[i]);
+        }
+    }
+
+    public void mirrorImages(Image[] mirrored, Image[] og){
+        for (int i = 0; i < og.length; i++) {
+            mirrored[i] = getMirrorImage(og[i]);
+        }
+    }
+
+    private void loadPlayer(){
+        // note: all the player images are facing right!
+
+        // load idle images for player
+        // has 4 images, images/player/idle/1.png
+        int numIdle = 4;
+        String playerIdlePath = "player/idle/";
+        Image[] playerIdle = new Image[numIdle];
+        Image[] playerIdleLeft = new Image[numIdle];
+        loadImages(playerIdle, playerIdlePath);
+        mirrorImages(playerIdleLeft, playerIdle); // this function will mirror the images in the second array, into the first array
+        // load run images for player
+        int numRun = 6;
+        String playerRunPath = "player/run/";
+        Image[] playerRun = new Image[numRun];
+        Image[] playerRunLeft = new Image[numRun];
+        loadImages(playerRun, playerRunPath);
+        mirrorImages(playerRunLeft, playerRun);
+        // load run images for player
+        int numDie = 7;
+        String playerDiePath = "player/die/";
+        Image[] playerDie = new Image[numDie];
+        Image[] playerDieLeft = new Image[numDie];
+        loadImages(playerDie, playerDiePath);
+        mirrorImages(playerDieLeft, playerDie);
+        // now make animations
+        Animation playerIdleAnim = new Animation();
+        playerIdleAnim = createPlayerAnim(playerIdle);
+
+        Animation playerIdleLeftAnim = new Animation();
+        playerIdleLeftAnim = createPlayerAnim(playerIdleLeft);
+
+        Animation playerRunAnim = new Animation();
+        playerRunAnim = createPlayerAnim(playerRun);
+
+        Animation playerRunLeftAnim = new Animation();
+        playerRunLeftAnim = createPlayerAnim(playerRunLeft);
+
+        Animation playerDieAnim = new Animation();
+        playerDieAnim = createPlayerAnim(playerDie);
+
+        Animation playerDieLeftAnim = new Animation();
+        playerDieLeftAnim = createPlayerAnim(playerDieLeft);
+
+        playerSprite = new Player(
+                playerRunLeftAnim, playerRunAnim,
+                playerDieLeftAnim, playerDieAnim,
+                playerIdleAnim, playerIdleLeftAnim
+        );
+    }
+
+    private void loadFly(){
+        // note: all the fly images are facing left
+        int num = 3;
+        String path = "fly/";
+        Image[] flyLeft = new Image[num];
+        Image[] fly = new Image[num];
+        Image[] flyFlippedLeft = new Image[num]; // deadleft
+        Image[] flyFlipped = new Image[num]; // dead right
+
+        loadImages(flyLeft, path); // load initial fly, which face left
+        mirrorImages(fly, flyLeft); // get right facing fly
+        flipImages(flyFlippedLeft, flyLeft); // get dead fly
+        flipImages(flyFlipped, fly); // get dead fly
+
+        Animation flyAnim = new Animation();
+        flyAnim = createFlyAnim(fly);
+        Animation flyLeftAnim = new Animation();
+        flyLeftAnim = createFlyAnim(flyLeft);
+        Animation dieAnim = new Animation();
+        dieAnim = createFlyAnim(flyFlipped);
+        Animation dieLeftAnim = new Animation();
+        dieLeftAnim = createFlyAnim(flyFlippedLeft);
+
+        flySprite = new Fly(flyLeftAnim, flyAnim, dieLeftAnim, dieAnim);
+    }
+
+    private void loadGrub(){
+        // note: all the fly images are facing left
+        int num = 2;
+        String path = "grub/";
+        Image[] flyLeft = new Image[num];
+        Image[] fly = new Image[num];
+        Image[] flyFlippedLeft = new Image[num]; // deadleft
+        Image[] flyFlipped = new Image[num]; // dead right
+
+        loadImages(flyLeft, path); // load initial fly, which face left
+        mirrorImages(fly, flyLeft); // get right facing fly
+        flipImages(flyFlippedLeft, flyLeft); // get dead fly
+        flipImages(flyFlipped, fly); // get dead fly
+
+        Animation flyAnim = new Animation();
+        flyAnim = createGrubAnim(fly);
+        Animation flyLeftAnim = new Animation();
+        flyLeftAnim = createGrubAnim(flyLeft);
+        Animation dieAnim = new Animation();
+        dieAnim = createGrubAnim(flyFlipped);
+        Animation dieLeftAnim = new Animation();
+        dieLeftAnim = createGrubAnim(flyFlippedLeft);
+
+        grubSprite = new Grub(flyLeftAnim, flyAnim, dieLeftAnim, dieAnim);
+    }
 
     public void loadCreatureSprites() {
+        // TODO: 22-Oct-19 refactor this, 2D arrays SUCK!
 
-        Image[][] images = new Image[4][];
-
-        // load left-facing images
-        images[0] = new Image[] {
-            loadImage("player1.png"),
-            loadImage("player2.png"),
-            loadImage("player3.png"),
-            loadImage("fly1.png"),
-            loadImage("fly2.png"),
-            loadImage("fly3.png"),
-            loadImage("grub1.png"),
-            loadImage("grub2.png"),
-        };
-
-        images[1] = new Image[images[0].length];
-        images[2] = new Image[images[0].length];
-        images[3] = new Image[images[0].length];
-        for (int i=0; i<images[0].length; i++) {
-            // right-facing images
-            images[1][i] = getMirrorImage(images[0][i]);
-            // left-facing "dead" images
-            images[2][i] = getFlippedImage(images[0][i]);
-            // right-facing "dead" images
-            images[3][i] = getFlippedImage(images[1][i]);
-        }
-
-        // create creature animations
-        Animation[] playerAnim = new Animation[4];
-        Animation[] flyAnim = new Animation[4];
-        Animation[] grubAnim = new Animation[4];
-        for (int i=0; i<4; i++) {
-            playerAnim[i] = createPlayerAnim(
-                images[i][0], images[i][1], images[i][2]);
-            flyAnim[i] = createFlyAnim(
-                images[i][3], images[i][4], images[i][5]);
-            grubAnim[i] = createGrubAnim(
-                images[i][6], images[i][7]);
-        }
-
-        // create creature sprites
-        playerSprite = new Player(playerAnim[0], playerAnim[1],
-            playerAnim[2], playerAnim[3]);
-        flySprite = new Fly(flyAnim[0], flyAnim[1],
-            flyAnim[2], flyAnim[3]);
-        grubSprite = new Grub(grubAnim[0], grubAnim[1],
-            grubAnim[2], grubAnim[3]);
-System.out.println("loadCreatureSprites successfully executed.");
+        loadPlayer(); // check death anim
+        loadFly();
+        loadGrub();
+        // TODO: 22-Oct-19 loadDio(); 
+        // TODO: 22-Oct-19 make minions
+        System.out.println("loadCreatureSprites successfully executed.");
 
     }
 
-
-    private Animation createPlayerAnim(Image player1,
-        Image player2, Image player3)
+    private Animation createPlayerAnim(Image[] images)
     {
         Animation anim = new Animation();
-        anim.addFrame(player1, 250);
-        anim.addFrame(player2, 150);
-        anim.addFrame(player1, 150);
-        anim.addFrame(player2, 150);
-        anim.addFrame(player3, 200);
-        anim.addFrame(player2, 150);
+        for (int i = 0; i < images.length; i++) {
+            anim.addFrame(images[i], 200);
+        }
         return anim;
     }
 
 
-    private Animation createFlyAnim(Image img1, Image img2,
-        Image img3)
+    private Animation createFlyAnim(Image[] images)
     {
         Animation anim = new Animation();
-        anim.addFrame(img1, 50);
-        anim.addFrame(img2, 50);
-        anim.addFrame(img3, 50);
-        anim.addFrame(img2, 50);
+        for (int i = 0; i < images.length; i++) {
+            anim.addFrame(images[i], 50);
+        }
         return anim;
     }
 
 
-    private Animation createGrubAnim(Image img1, Image img2) {
+    private Animation createGrubAnim(Image[] images)
+    {
         Animation anim = new Animation();
-        anim.addFrame(img1, 250);
-        anim.addFrame(img2, 250);
+        for (int i = 0; i < images.length; i++) {
+            anim.addFrame(images[i], 250);
+        }
         return anim;
     }
 
+    private void loadGoalSprite(){
+        String path = "drops/goal/";
+        int num = 3;
+        Animation anim = new Animation();
+        for (int i = 0; i < num; i++) anim.addFrame(loadImage(path + i + imgExt), 150);
+        goalSprite = new PowerUp.Goal(anim);
+    }
+    private void loadStarSprite(){
+        String path = "drops/star/";
+        int num = 4;
+        Animation anim = new Animation();
+        for (int i = 0; i < num; i++) anim.addFrame(loadImage(path + i + imgExt), 150);
+        starSprite = new PowerUp.Star(anim);
+    }
+    private void loadMusicSprite(){
+        String path = "drops/music/";
+        int num = 3;
+        Animation anim = new Animation();
+        for (int i = 0; i < num; i++) anim.addFrame(loadImage(path + i + imgExt), 150);
+        musicSprite = new PowerUp.Music(anim);
+    }
 
     private void loadPowerUpSprites() {
         // create "goal" sprite
-        Animation anim = new Animation();
-        anim.addFrame(loadImage("heart1.png"), 150);
-        anim.addFrame(loadImage("heart2.png"), 150);
-        anim.addFrame(loadImage("heart3.png"), 150);
-        anim.addFrame(loadImage("heart2.png"), 150);
-        goalSprite = new PowerUp.Goal(anim);
-
-        // create "star" sprite
-        anim = new Animation();
-        anim.addFrame(loadImage("star1.png"), 100);
-        anim.addFrame(loadImage("star2.png"), 100);
-        anim.addFrame(loadImage("star3.png"), 100);
-        anim.addFrame(loadImage("star4.png"), 100);
-        coinSprite = new PowerUp.Star(anim);
-
-        // create "music" sprite
-        anim = new Animation();
-        anim.addFrame(loadImage("music1.png"), 150);
-        anim.addFrame(loadImage("music2.png"), 150);
-        anim.addFrame(loadImage("music3.png"), 150);
-        anim.addFrame(loadImage("music2.png"), 150);
-        musicSprite = new PowerUp.Music(anim);
-
-System.out.println("loadPowerUpSprites successfully executed.");
+        loadGoalSprite();
+        loadMusicSprite();
+        loadStarSprite();
+        System.out.println("loadPowerUpSprites successfully executed.");
     }
 
 }

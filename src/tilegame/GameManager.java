@@ -48,6 +48,7 @@ public class GameManager extends GameCore {
 
     private graphics.input.GameAction moveLeft;
     private graphics.input.GameAction moveRight;
+    private graphics.input.GameAction shoot;
     private graphics.input.GameAction jump;
     private graphics.input.GameAction exit;
 
@@ -71,7 +72,7 @@ public class GameManager extends GameCore {
         // load resources
         renderer = new TileMapRenderer();
         renderer.setBackground(
-            resourceManager.loadImage("background.png"));
+            resourceManager.loadImage("environment/background.png"));
 
         // load first map
         map = resourceManager.loadNextMap();
@@ -100,13 +101,21 @@ public class GameManager extends GameCore {
     }
 
 
-    private void initInput() {
+    private void initInput() { // controls
         moveLeft = new graphics.input.GameAction("moveLeft");
         moveRight = new graphics.input.GameAction("moveRight");
-        jump = new graphics.input.GameAction("jump",
-                graphics.input.GameAction.DETECT_INITAL_PRESS_ONLY);
-        exit = new graphics.input.GameAction("exit",
-                graphics.input.GameAction.DETECT_INITAL_PRESS_ONLY);
+        jump = new graphics.input.GameAction(
+                "jump",
+                graphics.input.GameAction.DETECT_INITAL_PRESS_ONLY
+        );
+        shoot = new graphics.input.GameAction(
+                "shoot",
+                graphics.input.GameAction.DETECT_INITAL_PRESS_ONLY
+        );
+        exit = new graphics.input.GameAction(
+                "exit",
+                graphics.input.GameAction.DETECT_INITAL_PRESS_ONLY
+        );
 
         inputManager = new InputManager(
             screen.getFullScreenWindow());
@@ -115,6 +124,7 @@ public class GameManager extends GameCore {
         inputManager.mapToKey(moveLeft, KeyEvent.VK_LEFT);
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
+        inputManager.mapToKey(shoot, KeyEvent.VK_Z);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
     }
 
@@ -130,12 +140,19 @@ public class GameManager extends GameCore {
             float velocityX = 0;
             if (moveLeft.isPressed()) {
                 velocityX-=player.getMaxSpeed();
+                player.facingLeft = true;
+                player.facingRight = false;
             }
             if (moveRight.isPressed()) {
                 velocityX+=player.getMaxSpeed();
+                player.facingRight = true;
+                player.facingLeft = false;
             }
             if (jump.isPressed()) {
                 player.jump(false);
+            }
+            if(shoot.isPressed()){
+                // TODO: 22-Oct-19 make player.shoot();
             }
             player.setVelocityX(velocityX);
         }
