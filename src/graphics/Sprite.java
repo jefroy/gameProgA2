@@ -13,8 +13,6 @@ public class Sprite {
     protected float dy;
     protected int width;
     protected int height;
-    public boolean facingLeft;
-    public boolean facingRight;
 
     /**
         Creates a new Sprite object with the specified Animation.

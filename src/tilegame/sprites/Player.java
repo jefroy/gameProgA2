@@ -10,9 +10,15 @@ import java.lang.reflect.Constructor;
 public class Player extends Creature {
 
     private static final float JUMP_SPEED = -.95f;
+    public static final int STATE_JUMP = 3;
+    public static final int STATE_FALL = 4;
 
     private Animation idleLeft;
     private Animation idleRight;
+    private Animation jumpRight;
+    private Animation jumpLeft;
+    private Animation fallRight;
+    private Animation fallLeft;
 
     private boolean onGround;
     public int health;
@@ -22,14 +28,18 @@ public class Player extends Creature {
     public Player(
             Animation runLeft, Animation runRight,
             Animation deadLeft, Animation deadRight,
-            Animation idleLeft, Animation idleRight
+            Animation idleLeft, Animation idleRight,
+            Animation jumpLeft, Animation jumpRight,
+            Animation fallLeft, Animation fallRight
     )
     {
         super(runLeft, runRight, deadLeft, deadRight);
         this.idleLeft = idleLeft;
         this.idleRight = idleRight;
-        facingRight = true;
-        facingLeft = false;
+        this.jumpLeft = jumpLeft;
+        this.jumpRight = jumpRight;
+        this.fallLeft = fallLeft;
+        this.fallRight = fallRight;
         width = 80;
         height = 64;
         score = 0;
@@ -50,6 +60,22 @@ public class Player extends Creature {
         } else if (state == STATE_NORMAL && newAnim == right) {
             newAnim = idleRight;
         }
+//        else if(!onGround && newAnim == left){
+//            newAnim = jumpLeft;
+////            state = STATE_FALL;
+//        }
+//        else if(!onGround && newAnim == right){
+//            newAnim = jumpRight;
+////            state = STATE_FALL;
+//        }
+//        else if(onGround  && newAnim == left){
+//            newAnim = fallLeft;
+////            state = STATE_NORMAL;
+//        }
+//        else if(onGround  && newAnim == right){
+//            newAnim = fallRight;
+////            state = STATE_NORMAL;
+//        }
 
         if (state == STATE_DYING && newAnim == left) {
             newAnim = deadLeft;
@@ -77,14 +103,18 @@ public class Player extends Creature {
         // use reflection to create the correct subclass
         Constructor constructor = getClass().getConstructors()[0];
         try {
-            return constructor.newInstance(new Object[] {
-                    (Animation)left.clone(),
-                    (Animation)right.clone(),
-                    (Animation)deadLeft.clone(),
-                    (Animation)deadRight.clone(),
-                    (Animation)idleLeft.clone(),
-                    (Animation)idleRight.clone()
-            });
+            Object o;
+            o = constructor.newInstance((Animation) left.clone(),
+                    (Animation) right.clone(),
+                    (Animation) deadLeft.clone(),
+                    (Animation) deadRight.clone(),
+                    (Animation) idleLeft.clone(),
+                    (Animation) idleRight.clone(),
+                    (Animation) jumpLeft.clone(),
+                    (Animation) jumpRight.clone(),
+                    (Animation) fallLeft.clone(),
+                    (Animation) fallRight.clone());
+            return o;
         }
         catch (Exception ex) {
             // should never happen
@@ -130,6 +160,17 @@ public class Player extends Creature {
         if (onGround || forceJump) {
             onGround = false;
             setVelocityY(JUMP_SPEED);
+        }
+    }
+
+    /**
+        Makes the player FALL if the player is on the AIR or
+        if forceFall is true.
+    */
+    public void fall(boolean forceFall) {
+        if (!onGround || forceFall) {
+            onGround = true;
+            setVelocityY(-JUMP_SPEED);
         }
     }
 

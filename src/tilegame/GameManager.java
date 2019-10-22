@@ -2,6 +2,7 @@ package tilegame;
 
 import graphics.ScreenManager;
 import graphics.Sprite;
+import graphics.input.GameAction;
 import graphics.input.InputManager;
 import sound.EchoFilter;
 import sound.MidiPlayer;
@@ -18,6 +19,8 @@ import javax.sound.sampled.AudioFormat;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
+
+import static tilegame.sprites.Player.STATE_JUMP;
 
 /**
     GameManager manages all parts of the game.
@@ -110,7 +113,7 @@ public class GameManager extends GameCore {
         );
         shoot = new graphics.input.GameAction(
                 "shoot",
-                graphics.input.GameAction.DETECT_INITAL_PRESS_ONLY
+                GameAction.NORMAL // THIS MAY NEED TO CHANGE TO initial press only
         );
         exit = new graphics.input.GameAction(
                 "exit",
@@ -140,13 +143,9 @@ public class GameManager extends GameCore {
             float velocityX = 0;
             if (moveLeft.isPressed()) {
                 velocityX-=player.getMaxSpeed();
-                player.facingLeft = true;
-                player.facingRight = false;
             }
             if (moveRight.isPressed()) {
                 velocityX+=player.getMaxSpeed();
-                player.facingRight = true;
-                player.facingLeft = false;
             }
             if (jump.isPressed()) {
                 player.jump(false);

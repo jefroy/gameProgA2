@@ -308,29 +308,42 @@ public class ResourceManager {
         Image[] playerDieLeft = new Image[numDie];
         loadImages(playerDie, playerDiePath);
         mirrorImages(playerDieLeft, playerDie);
+        //load jump images
+        int numJump = 4;
+        String playerJumpPath = "player/jump/";
+        Image[] playerJump = new Image[numJump];
+        Image[] playerJumpLeft = new Image[numJump];
+        loadImages(playerJump, playerJumpPath);
+        mirrorImages(playerJumpLeft, playerJump);
+        //load FALL images
+        int numFall = 2;
+        String playerFallPath = "player/fall/";
+        Image[] playerFall = new Image[numFall];
+        Image[] playerFallLeft = new Image[numFall];
+        loadImages(playerFall, playerFallPath);
+        mirrorImages(playerFallLeft, playerFall);
         // now make animations
-        Animation playerIdleAnim = new Animation();
-        playerIdleAnim = createPlayerAnim(playerIdle);
+        Animation playerIdleAnim = createPlayerAnim(playerIdle);
+        Animation playerIdleLeftAnim = createPlayerAnim(playerIdleLeft);
 
-        Animation playerIdleLeftAnim = new Animation();
-        playerIdleLeftAnim = createPlayerAnim(playerIdleLeft);
+        Animation playerRunAnim = createPlayerAnim(playerRun);
+        Animation playerRunLeftAnim = createPlayerAnim(playerRunLeft);
 
-        Animation playerRunAnim = new Animation();
-        playerRunAnim = createPlayerAnim(playerRun);
+        Animation playerDieAnim = createPlayerAnim(playerDie);
+        Animation playerDieLeftAnim = createPlayerAnim(playerDieLeft);
 
-        Animation playerRunLeftAnim = new Animation();
-        playerRunLeftAnim = createPlayerAnim(playerRunLeft);
+        Animation playerJumpAnim = createPlayerAnim(playerJump);
+        Animation playerJumpLeftAnim = createPlayerAnim(playerJumpLeft);
 
-        Animation playerDieAnim = new Animation();
-        playerDieAnim = createPlayerAnim(playerDie);
-
-        Animation playerDieLeftAnim = new Animation();
-        playerDieLeftAnim = createPlayerAnim(playerDieLeft);
+        Animation playerFallAnim = createPlayerAnim(playerFall);
+        Animation playerFallLeftAnim = createPlayerAnim(playerFallLeft);
 
         playerSprite = new Player(
                 playerRunLeftAnim, playerRunAnim,
                 playerDieLeftAnim, playerDieAnim,
-                playerIdleAnim, playerIdleLeftAnim
+                playerIdleLeftAnim, playerIdleAnim,
+                playerJumpLeftAnim, playerJumpAnim,
+                playerFallLeftAnim, playerFallAnim
         );
     }
 
@@ -389,7 +402,7 @@ public class ResourceManager {
     public void loadCreatureSprites() {
         // TODO: 22-Oct-19 refactor this, 2D arrays SUCK!
 
-        loadPlayer(); // check death anim
+        loadPlayer(); // check jump anim
         loadFly();
         loadGrub();
         // TODO: 22-Oct-19 loadDio(); 
