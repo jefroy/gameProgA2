@@ -20,7 +20,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
 
-import static tilegame.sprites.Player.STATE_JUMP;
 
 /**
     GameManager manages all parts of the game.
@@ -54,13 +53,6 @@ public class GameManager extends GameCore {
     private graphics.input.GameAction shoot;
     private graphics.input.GameAction jump;
     private graphics.input.GameAction exit;
-
-
-   public ScreenManager init1() {
-	super.init();
-	return screen;
-   }
-
 
     public void init() {
         super.init();
@@ -149,6 +141,7 @@ public class GameManager extends GameCore {
             }
             if (jump.isPressed()) {
                 player.jump(false);
+                player.jumped = true;
             }
             if(shoot.isPressed()){
                 // TODO: 22-Oct-19 make player.shoot();
@@ -283,7 +276,7 @@ public class GameManager extends GameCore {
         in the current map.
     */
     public void update(long elapsedTime) {
-        Creature player = (Creature)map.getPlayer();
+        Player player = (Player)map.getPlayer();
 /*
 	if (player == null)
 		System.out.println("Player is null. Program about to crash.");
@@ -300,7 +293,7 @@ public class GameManager extends GameCore {
         checkInput(elapsedTime);
 
         // update player
-        updateCreature(player, elapsedTime);
+        updatePlayer(player, elapsedTime);
         player.update(elapsedTime);
 
         // update other sprites
@@ -386,6 +379,80 @@ public class GameManager extends GameCore {
         if (creature instanceof Player) {
             boolean canKill = (oldY < creature.getY());
             checkPlayerCollision((Player)creature, canKill);
+        }
+
+    }
+
+    /**
+     Updates the creature, applying gravity for creatures that
+     aren't flying, and checks collisions.
+     */
+    private void updatePlayer(Player player, long elapsedTime)
+    {
+
+        // apply gravity
+        if (!player.isFlying()) {
+            player.setVelocityY(player.getVelocityY() +
+                    GRAVITY * elapsedTime);
+            player.jumped = true;
+//            player.setState(player.STATE_FALLING);
+        }
+        else if(player.getVelocityY() < 0) {
+//            player.setState(player.STATE_JUMPING);
+            player.jumped = false;
+        }
+//        else player.setState(player.STATE_NORMAL);
+
+        // change x
+        float dx = player.getVelocityX();
+        float oldX = player.getX();
+        float newX = oldX + dx * elapsedTime;
+        Point tile =
+                getTileCollision(player, newX, player.getY());
+        if (tile == null) {
+            player.setX(newX);
+        }
+        else {
+            // line up with the tile boundary
+            if (dx > 0) {
+                player.setX(
+                        TileMapRenderer.tilesToPixels(tile.x) -
+                                player.getWidth());
+            }
+            else if (dx < 0) {
+                player.setX(
+                        TileMapRenderer.tilesToPixels(tile.x + 1));
+            }
+            player.collideHorizontal();
+        }
+        if (player instanceof Player) {
+            checkPlayerCollision((Player)player, false);
+        }
+
+        // change y
+        float dy = player.getVelocityY();
+        float oldY = player.getY();
+        float newY = oldY + dy * elapsedTime;
+        tile = getTileCollision(player, player.getX(), newY);
+        if (tile == null) {
+            player.setY(newY);
+        }
+        else {
+            // line up with the tile boundary
+            if (dy > 0) {
+                player.setY(
+                        TileMapRenderer.tilesToPixels(tile.y) -
+                                player.getHeight());
+            }
+            else if (dy < 0) {
+                player.setY(
+                        TileMapRenderer.tilesToPixels(tile.y + 1));
+            }
+            player.collideVertical();
+        }
+        if (player instanceof Player) {
+            boolean canKill = (oldY < player.getY());
+            checkPlayerCollision((Player)player, canKill);
         }
 
     }

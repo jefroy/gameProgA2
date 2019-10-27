@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 
 import graphics.Sprite;
+import tilegame.sprites.Player;
 
 /**
     The TileMap class contains the data for a tile-based
@@ -16,7 +17,7 @@ public class TileMap {
 
     private Image[][] tiles;
     private LinkedList sprites;
-    private Sprite player;
+    private Player player;
 
     /**
         Creates a new TileMap with the specified width and
@@ -72,7 +73,7 @@ public class TileMap {
     /**
         Gets the player Sprite.
     */
-    public Sprite getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
@@ -80,7 +81,7 @@ public class TileMap {
     /**
         Sets the player Sprite.
     */
-    public void setPlayer(Sprite player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 

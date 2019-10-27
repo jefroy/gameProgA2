@@ -201,7 +201,7 @@ public class ResourceManager {
         }
 
         // add the player to the map
-        Sprite player = (Sprite)playerSprite.clone();
+        Player player = (Player) playerSprite.clone();
         player.setX(TileMapRenderer.tilesToPixels(3));
         player.setY(0);
         newMap.setPlayer(player);
@@ -329,8 +329,8 @@ public class ResourceManager {
         Animation playerRunAnim = createPlayerAnim(playerRun);
         Animation playerRunLeftAnim = createPlayerAnim(playerRunLeft);
 
-        Animation playerDieAnim = createPlayerAnim(playerDie);
-        Animation playerDieLeftAnim = createPlayerAnim(playerDieLeft);
+        Animation playerDieAnim = createGrubAnim(playerDie);
+        Animation playerDieLeftAnim = createGrubAnim(playerDieLeft);
 
         Animation playerJumpAnim = createPlayerAnim(playerJump);
         Animation playerJumpLeftAnim = createPlayerAnim(playerJumpLeft);
@@ -400,8 +400,6 @@ public class ResourceManager {
     }
 
     public void loadCreatureSprites() {
-        // TODO: 22-Oct-19 refactor this, 2D arrays SUCK!
-
         loadPlayer(); // check jump anim
         loadFly();
         loadGrub();

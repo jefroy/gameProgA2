@@ -9,10 +9,11 @@ import java.lang.reflect.Constructor;
 */
 public class Player extends Creature {
 
-    private static final float JUMP_SPEED = -.95f;
-    public static final int STATE_JUMP = 3;
-    public static final int STATE_FALL = 4;
+    public static final float JUMP_SPEED = -.95f;
+    public static final int STATE_JUMPING = 3;
+    public static final int STATE_FALLING = 4;
 
+    // additional animations
     private Animation idleLeft;
     private Animation idleRight;
     private Animation jumpRight;
@@ -21,9 +22,15 @@ public class Player extends Creature {
     private Animation fallLeft;
 
     private boolean onGround;
+    public boolean jumped;
+    public boolean isFalling;
+    public boolean facingLeft;
+    public boolean facingRight;
     public int health;
     public int score;
     public int damage;
+    public int newHeight;
+    public int newWidth;
 
     public Player(
             Animation runLeft, Animation runRight,
@@ -40,47 +47,72 @@ public class Player extends Creature {
         this.jumpRight = jumpRight;
         this.fallLeft = fallLeft;
         this.fallRight = fallRight;
-        width = 80;
-        height = 64;
+        newWidth = 80;
+        newHeight = 64;
         score = 0;
         health = 5;
         damage = 1;
+        jumped = false;
+        isFalling = false;
+        facingLeft = false;
+        facingRight =true;
+        DIE_TIME = 1000;
     }
 
     @Override
     public void update(long elapsedTime) {
+
         // select the correct Animation
+//        System.out.println(
+//                "player update:"
+//                + "\nvelX: " + getVelocityX()
+//                + "\nvelY: " + getVelocityY()
+//                + "\nstate: " + state
+//        );
         Animation newAnim = anim;
-        if (getVelocityX() < 0) {
+        // moving left
+        if (getVelocityX() < 0) { // try adding getVelocityY() == 0
             newAnim = left;
-        } else if (getVelocityX() > 0) {
+        }
+        // moving right
+        else if (getVelocityX() > 0) {
             newAnim = right;
-        } else if (state == STATE_NORMAL && newAnim == left) {
+        }
+        else if (state == STATE_NORMAL && newAnim == left) {
             newAnim = idleLeft;
-        } else if (state == STATE_NORMAL && newAnim == right) {
+        }
+        else if (state == STATE_NORMAL && newAnim == right) {
             newAnim = idleRight;
         }
-//        else if(!onGround && newAnim == left){
-//            newAnim = jumpLeft;
-////            state = STATE_FALL;
-//        }
-//        else if(!onGround && newAnim == right){
-//            newAnim = jumpRight;
-////            state = STATE_FALL;
-//        }
-//        else if(onGround  && newAnim == left){
-//            newAnim = fallLeft;
-////            state = STATE_NORMAL;
-//        }
-//        else if(onGround  && newAnim == right){
-//            newAnim = fallRight;
-////            state = STATE_NORMAL;
-//        }
+        // jumping ??
+        else if (getVelocityY() < 0) {
+            if(newAnim == left || newAnim == idleLeft) newAnim = jumpLeft;
+            else if(newAnim == right || newAnim == idleRight) newAnim = jumpRight;
+            jumped = false;
+            System.out.println(
+                    "player update:"
+                            + "\nvelX: " + getVelocityX()
+                            + "\nvelY: " + getVelocityY()
+                            + "\nstate: " + state
+            );
 
-        if (state == STATE_DYING && newAnim == left) {
-            newAnim = deadLeft;
-        } else if (state == STATE_DYING && newAnim == right) {
-            newAnim = deadRight;
+        }
+        // falling ??
+        else if (getVelocityY() > 0) {
+            if(newAnim == left || newAnim == idleLeft || newAnim == jumpLeft) newAnim = fallLeft;
+            else if(newAnim == right || newAnim == idleRight || newAnim == jumpRight) newAnim = fallRight;
+            System.out.println(
+                    "player update:"
+                            + "\nvelX: " + getVelocityX()
+                            + "\nvelY: " + getVelocityY()
+                            + "\nstate: " + state
+            );
+        }
+
+
+        if (state == STATE_DYING) {
+            if(newAnim == left || newAnim == idleLeft) newAnim = deadLeft;
+            else newAnim = deadRight;
         }
 
         // update the Animation
@@ -104,7 +136,8 @@ public class Player extends Creature {
         Constructor constructor = getClass().getConstructors()[0];
         try {
             Object o;
-            o = constructor.newInstance((Animation) left.clone(),
+            o = constructor.newInstance(
+                    (Animation) left.clone(),
                     (Animation) right.clone(),
                     (Animation) deadLeft.clone(),
                     (Animation) deadRight.clone(),
@@ -160,6 +193,11 @@ public class Player extends Creature {
         if (onGround || forceJump) {
             onGround = false;
             setVelocityY(JUMP_SPEED);
+            System.out.println(
+                    "Jumping"
+                            + "\ngetVelocityY(): " + getVelocityY()
+                            + "\njumped: " + jumped
+            );
         }
     }
 
@@ -174,9 +212,7 @@ public class Player extends Creature {
         }
     }
 
-
     public float getMaxSpeed() {
         return 0.5f;
     }
-
 }

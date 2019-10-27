@@ -13,6 +13,9 @@ import javax.swing.JFrame;
 public class ScreenManager {
 
     private GraphicsDevice device;
+    // fsem
+    private static final int NUM_BUFFERS = 2;	// used for page flipping
+    private BufferStrategy bufferStrategy;
 
     /**
         Creates a new ScreenManager object.
@@ -133,7 +136,7 @@ public class ScreenManager {
         try {
             EventQueue.invokeAndWait(new Runnable() {
                 public void run() {
-                    frame.createBufferStrategy(2);
+                    frame.createBufferStrategy(NUM_BUFFERS);
                 }
             });
         }
@@ -158,8 +161,8 @@ public class ScreenManager {
     public Graphics2D getGraphics() {
         Window window = device.getFullScreenWindow();
         if (window != null) {
-            BufferStrategy strategy = window.getBufferStrategy();
-            return (Graphics2D)strategy.getDrawGraphics();
+            bufferStrategy = window.getBufferStrategy();
+            return (Graphics2D)bufferStrategy.getDrawGraphics();
         }
         else {
             return null;
@@ -251,4 +254,6 @@ public class ScreenManager {
         }
         return null;
     }
+
+
 }

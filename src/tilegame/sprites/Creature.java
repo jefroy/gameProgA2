@@ -15,7 +15,7 @@ public abstract class Creature extends Sprite {
     /**
         Amount of time to go from STATE_DYING to STATE_DEAD.
     */
-    protected static final int DIE_TIME = 2000;
+    protected static int DIE_TIME = 2000;
 
     public static final int STATE_NORMAL = 0;
     public static final int STATE_DYING = 1;
@@ -122,6 +122,7 @@ public abstract class Creature extends Sprite {
     public boolean isFlying() {
         return false;
     }
+
 
 
     /**

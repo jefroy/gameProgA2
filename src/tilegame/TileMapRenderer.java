@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import graphics.Sprite;
 import tilegame.sprites.Creature;
+import tilegame.sprites.Player;
 
 /**
     The TileMapRenderer class draws a TileMap on the screen.
@@ -78,7 +79,7 @@ public class TileMapRenderer {
     public void draw(Graphics2D g, TileMap map,
         int screenWidth, int screenHeight)
     {
-        Sprite player = map.getPlayer();
+        Player player = map.getPlayer();
         int mapWidth = tilesToPixels(map.getWidth());
 
         // get the scrolling position of the map
@@ -129,7 +130,9 @@ public class TileMapRenderer {
         // draw player
         g.drawImage(player.getImage(),
             Math.round(player.getX()) + offsetX,
-            Math.round(player.getY()) + offsetY,
+            Math.round(player.getY()) + offsetY - 20,
+            player.newWidth,
+            player.newHeight,
             null);
 
         // draw sprites
