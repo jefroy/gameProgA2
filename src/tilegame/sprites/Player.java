@@ -57,6 +57,7 @@ public class Player extends Creature {
         facingLeft = false;
         facingRight =true;
         DIE_TIME = 1000;
+        onGround = true;
     }
 
     @Override
@@ -90,7 +91,7 @@ public class Player extends Creature {
             else if(newAnim == right || newAnim == idleRight) newAnim = jumpRight;
             jumped = false;
             System.out.println(
-                    "player update:"
+                    "player  jump update:"
                             + "\nvelX: " + getVelocityX()
                             + "\nvelY: " + getVelocityY()
                             + "\nstate: " + state
@@ -98,11 +99,12 @@ public class Player extends Creature {
 
         }
         // falling ??
-        else if (getVelocityY() > 0) {
+        else if (!onGround) {
             if(newAnim == left || newAnim == idleLeft || newAnim == jumpLeft) newAnim = fallLeft;
             else if(newAnim == right || newAnim == idleRight || newAnim == jumpRight) newAnim = fallRight;
+            onGround = true;
             System.out.println(
-                    "player update:"
+                    "player fall update:"
                             + "\nvelX: " + getVelocityX()
                             + "\nvelY: " + getVelocityY()
                             + "\nstate: " + state
