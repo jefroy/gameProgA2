@@ -28,6 +28,16 @@ public abstract class Creature extends Sprite {
     protected int state;
     protected long stateTime;
 
+    public boolean onGround;
+    public boolean jumped;
+    public boolean isFalling;
+    public boolean facingLeft;
+    public boolean facingRight;
+    public int health;
+    public int worth;
+    public int damage;
+
+
     /**
         Creates a new Creature with the specified Animations.
     */

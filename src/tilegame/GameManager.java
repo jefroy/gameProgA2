@@ -243,10 +243,10 @@ public class GameManager extends GameCore {
         int s2y = Math.round(s2.getY());
 
         // check if the two sprites' boundaries intersect
-        return (s1x < s2x + s2.getWidth() &&
-            s2x < s1x + s1.getWidth() &&
-            s1y < s2y + s2.getHeight() &&
-            s2y < s1y + s1.getHeight());
+        return (s1x < s2x + s2.getNewWidth() &&
+            s2x < s1x + s1.getNewWidth() &&
+            s1y < s2y + s2.getNewHeight() &&
+            s2y < s1y + s1.getNewHeight());
     }
 
 

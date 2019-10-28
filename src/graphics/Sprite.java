@@ -11,8 +11,9 @@ public class Sprite {
     // velocity (pixels per millisecond)
     protected float dx;
     protected float dy;
-    protected int width;
-    protected int height;
+    public int newHeight;
+    public int newWidth;
+    public char tileID;
 
     /**
         Creates a new Sprite object with the specified Animation.
@@ -120,5 +121,12 @@ public class Sprite {
     */
     public Object clone() {
         return new Sprite(anim);
+    }
+
+    public int getNewHeight(){
+        return this.newHeight;
+    }
+    public int getNewWidth(){
+        return this.newWidth;
     }
 }

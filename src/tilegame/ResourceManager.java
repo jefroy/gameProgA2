@@ -3,7 +3,6 @@ package tilegame;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
-import java.lang.annotation.AnnotationTypeMismatchException;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
@@ -29,7 +28,10 @@ public class ResourceManager {
     private Sprite goalSprite;
     private Sprite grubSprite;
     private Sprite flySprite;
+    private Creep_Fly creep_fly;
+    private Creep_Zombie creep_zombie;
     public String imgExt = ".png";
+    public String imgExtGif = ".gif";
 
     /**
         Creates a new ResourceManager with the specified
@@ -41,20 +43,27 @@ public class ResourceManager {
         loadCreatureSprites();
         loadPowerUpSprites();
     }
-//
-//
-//    public ResourceManager() {
-//        //this.gc = gc;			// don't worry about graphics for now
-//        loadTileImages();
-//        loadCreatureSprites();
-//        loadPowerUpSprites();
-//    }
-
 
     /**
         Gets an image from the images/ directory.
     */
     public Image loadImage(String name) {
+	String filename = "images/" + name;
+        //String filename = "images/" + name;
+
+            File file = new File(filename);
+            if (!file.exists()) {
+                System.out.println("Image file could not be opened: " + filename);
+            }
+            else
+                System.out.println("Image file opened: " + filename);
+
+        return new ImageIcon(filename).getImage();
+    }
+    /**
+        Gets an image from the images/ directory.
+    */
+    public Image loadGif(String name) {
 	String filename = "images/" + name;
         //String filename = "images/" + name;
 
@@ -197,6 +206,10 @@ public class ResourceManager {
                 else if (ch == '2') {
                     addSprite(newMap, flySprite, x, y);
                 }
+                else if (ch == creep_fly.tileID)
+                    addSprite(newMap, creep_fly, x, y);
+                else if (ch == creep_zombie.tileID)
+                    addSprite(newMap, creep_fly, x, y);
             }
         }
 
@@ -373,6 +386,61 @@ public class ResourceManager {
         flySprite = new Fly(flyLeftAnim, flyAnim, dieLeftAnim, dieAnim);
     }
 
+    private void loadCreeps(){
+        // note: all the fly images are facing right
+        String path = "creeps/";
+
+        String zombiePath = path + "zombie/";
+        Image idleRight = loadGif(zombiePath + "idle" + imgExtGif);
+        Image idleLeft = getMirrorImage(idleRight);
+        Image runRight = loadGif(zombiePath + "run" + imgExtGif);
+        Image runLeft = getMirrorImage(runRight);
+        Image dieL = loadGif(zombiePath + "die" + imgExtGif);
+        dieL = getFlippedImage(dieL);
+        Image dieR = getMirrorImage(dieL);
+
+        Animation idleR = new Animation();
+        Animation idleL = new Animation();
+        idleR.addFrame(idleRight, 500);
+        idleL.addFrame(idleLeft, 500);
+
+        Animation runR = new Animation();
+        Animation runL = new Animation();
+        runR.addFrame(runRight, 500);
+        runL.addFrame(runLeft, 500);
+
+        Animation dieRight = new Animation();
+        Animation dieLeft = new Animation();
+        dieRight.addFrame(dieR, 500);
+        dieLeft.addFrame(dieL, 500);
+
+        this.creep_zombie = new Creep_Zombie(runL, runR, dieLeft, dieRight);
+
+
+        int num = 5;
+        String batPath = path + "bat/";
+        Image[] flyLeft = new Image[num];
+        Image[] fly = new Image[num];
+        Image[] flyFlippedLeft = new Image[num]; // deadleft
+        Image[] flyFlipped = new Image[num]; // dead right
+
+        loadImages(flyLeft, batPath); // load initial fly, which face left
+        mirrorImages(fly, flyLeft); // get right facing fly
+        flipImages(flyFlippedLeft, flyLeft); // get dead fly
+        flipImages(flyFlipped, fly); // get dead fly
+
+        Animation flyAnim = new Animation();
+        flyAnim = createFlyAnim(fly);
+        Animation flyLeftAnim = new Animation();
+        flyLeftAnim = createFlyAnim(flyLeft);
+        Animation dieAnim = new Animation();
+        dieAnim = createFlyAnim(flyFlipped);
+        Animation dieLeftAnim = new Animation();
+        dieLeftAnim = createFlyAnim(flyFlippedLeft);
+
+        this.creep_fly = new Creep_Fly(flyLeftAnim, flyAnim, dieLeftAnim, dieAnim);
+    }
+
     private void loadGrub(){
         // note: all the fly images are facing left
         int num = 2;
@@ -405,6 +473,7 @@ public class ResourceManager {
         loadGrub();
         // TODO: 22-Oct-19 loadDio(); 
         // TODO: 22-Oct-19 make minions
+        loadCreeps();
         System.out.println("loadCreatureSprites successfully executed.");
 
     }

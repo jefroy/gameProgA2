@@ -10,6 +10,9 @@ public abstract class PowerUp extends Sprite {
 
     public PowerUp(Animation anim) {
         super(anim);
+//        tileID = '2';
+        newHeight = getHeight();
+        newWidth = getWidth();
     }
 
 

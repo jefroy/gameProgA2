@@ -11,6 +11,9 @@ public class Fly extends Creature {
         Animation deadLeft, Animation deadRight)
     {
         super(left, right, deadLeft, deadRight);
+        tileID = '2';
+        newHeight = getHeight();
+        newWidth = getWidth();
     }
 
 

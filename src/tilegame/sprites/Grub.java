@@ -11,6 +11,9 @@ public class Grub extends Creature {
         Animation deadLeft, Animation deadRight)
     {
         super(left, right, deadLeft, deadRight);
+        tileID = '1';
+        newHeight = getHeight();
+        newWidth = getWidth();
     }
 
 

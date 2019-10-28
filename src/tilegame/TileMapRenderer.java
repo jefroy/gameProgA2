@@ -141,7 +141,12 @@ public class TileMapRenderer {
             Sprite sprite = (Sprite)i.next();
             int x = Math.round(sprite.getX()) + offsetX;
             int y = Math.round(sprite.getY()) + offsetY;
-            g.drawImage(sprite.getImage(), x, y, null);
+            g.drawImage(
+                    sprite.getImage(), x, y,
+                    sprite.newWidth,
+                    sprite.newHeight,
+                    null
+            );
 
             // wake up the creature when it's on screen
             if (sprite instanceof Creature &&
