@@ -22,7 +22,8 @@ public class ResourceManager {
     private GraphicsConfiguration gc;
 
     // host sprites used for cloning
-    private Sprite playerSprite;
+    public Player playerSprite;
+    public Player player;
     private Sprite musicSprite;
     private Sprite starSprite;
     private Sprite goalSprite;
@@ -30,7 +31,6 @@ public class ResourceManager {
     private Sprite flySprite;
     private Creep_Fly creep_fly;
     private Creep_Zombie creep_zombie;
-    private Player player;
     public String imgExt = ".png";
     public String imgExtGif = ".gif";
 
@@ -43,7 +43,7 @@ public class ResourceManager {
         loadTileImages();
         loadCreatureSprites();
         loadPowerUpSprites();
-        this.player = (Player) playerSprite.clone();
+        player = (Player) playerSprite.clone();
     }
 
     /**
@@ -216,6 +216,8 @@ public class ResourceManager {
         }
 
         // add the player to the map
+//        if(player.health <= 0) player.resetStats();
+        player.setState(player.STATE_NORMAL);
         player.setX(TileMapRenderer.tilesToPixels(3));
         player.setY(0);
         newMap.setPlayer(player);

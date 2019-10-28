@@ -63,8 +63,7 @@ public class GameManager extends GameCore {
         initInput();
 
         // start resource manager
-        resourceManager = new ResourceManager(
-        screen.getFullScreenWindow().getGraphicsConfiguration());
+        resourceManager = new ResourceManager(screen.getFullScreenWindow().getGraphicsConfiguration());
 
         // load resources
         renderer = new TileMapRenderer(this);
@@ -504,14 +503,13 @@ public class GameManager extends GameCore {
 //                soundManager.play(oofSound);
                 player.health -= badguy.damage;
                 if(player.health <= 0){
-                    // if the player dies while idle, game can crash
-                    if(player.health <= 0) player.setState(Creature.STATE_DYING);
+                    player.setState(Creature.STATE_DYING);
+                    player.resetStats();
                     // TODO: 28-Oct-19 oof sound
                 }
                 else{
                     // if the player dies while idle, game can crash
                     player.grace();
-                    if(player.health <= 0) player.setState(Creature.STATE_DYING);
                 }
 
             }

@@ -21,6 +21,7 @@ public class Player extends Creature {
 
     public int score;
     public boolean win;
+    public int maxHP;
 
     public Player(
             Animation runLeft, Animation runRight,
@@ -40,7 +41,8 @@ public class Player extends Creature {
         newWidth = 80;
         newHeight = 64;
         score = 0;
-        health = 5;
+        maxHP = 5;
+        health = maxHP;
         damage = 1;
         jumped = false;
         isFalling = false;
@@ -199,5 +201,13 @@ public class Player extends Creature {
     public void grace(){
         this.x -= 15;
         this.y -= 30;
+    }
+
+    // player dies, reset score
+    public void resetStats(){
+        System.out.println("did u die? resetting stats.");
+        this.score = 0;
+        this.health = maxHP;
+//        this.state = STATE_NORMAL;
     }
 }
