@@ -518,7 +518,6 @@ public class ResourceManager {
         loadFly();
         loadGrub();
         loadDio();
-        // TODO: 22-Oct-19 loadDio();
         loadCreeps();
         System.out.println("loadCreatureSprites successfully executed.");
 
