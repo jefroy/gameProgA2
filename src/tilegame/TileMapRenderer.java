@@ -28,7 +28,17 @@ public class TileMapRenderer {
     // Math.pow(2, TILE_SIZE_BITS) == TILE_SIZE
     private static final int TILE_SIZE_BITS = 6;
 
-    private Image background;
+    private Image plx1;
+    private Image plx2;
+    private Image plx3;
+    private Image plx4;
+    private Image plx5;
+
+    private GameManager gm;
+
+    public TileMapRenderer(GameManager gm){
+        this.gm = gm;
+    }
 
     /**
         Converts a pixel position to a tile position.
@@ -68,9 +78,15 @@ public class TileMapRenderer {
     /**
         Sets the background to draw.
     */
-    public void setBackground(Image background) {
-        this.background = background;
+    public void setBackground(Image plx1,Image plx2,Image plx3,Image plx4,Image plx5) {
+        this.plx1 = plx1;
+        this.plx2 = plx2;
+        this.plx3 = plx3;
+        this.plx4 = plx4;
+        this.plx5 = plx5;
     }
+
+
 
 
     /**
@@ -94,21 +110,27 @@ public class TileMapRenderer {
             tilesToPixels(map.getHeight());
 
         // draw black background, if needed
-        if (background == null ||
-            screenHeight > background.getHeight(null))
+        if (plx1 == null ||
+            screenHeight > plx1.getHeight(null))
         {
             g.setColor(Color.black);
             g.fillRect(0, 0, screenWidth, screenHeight);
         }
 
         // draw parallax background image
-        if (background != null) {
+        if (plx1 != null) {
             int x = offsetX *
-                (screenWidth - background.getWidth(null)) /
+                (screenWidth - plx1.getWidth(null)) /
                 (screenWidth - mapWidth);
-            int y = screenHeight - background.getHeight(null);
+            int y = screenHeight - plx1.getHeight(null);
 
-            g.drawImage(background, x, y, null);
+            g.drawImage(plx1, x, y, null);
+            g.drawImage(plx2, x, y, null);
+            g.drawImage(plx3, x, y, null);
+            g.drawImage(plx4, x, y, null);
+            g.drawImage(plx5, x, y, null);
+            // draw gui
+
         }
 
         // draw the visible tiles
@@ -130,9 +152,9 @@ public class TileMapRenderer {
         // draw player
         g.drawImage(player.getImage(),
             Math.round(player.getX()) + offsetX,
-            Math.round(player.getY()) + offsetY - 20,
-            player.newWidth,
-            player.newHeight,
+            Math.round(player.getY()) + offsetY,
+//            player.newWidth,
+//            player.newHeight,
             null);
 
         // draw sprites
@@ -140,11 +162,11 @@ public class TileMapRenderer {
         while (i.hasNext()) {
             Sprite sprite = (Sprite)i.next();
             int x = Math.round(sprite.getX()) + offsetX;
-            int y = Math.round(sprite.getY()) + offsetY;
+            int y = Math.round(sprite.getY()) + offsetY + 10;
             g.drawImage(
                     sprite.getImage(), x, y,
-                    sprite.newWidth,
-                    sprite.newHeight,
+//                    sprite.newWidth,
+//                    sprite.newHeight,
                     null
             );
 
@@ -155,6 +177,32 @@ public class TileMapRenderer {
                 ((Creature)sprite).wakeUp();
             }
         }
+        // draw gui over everything
+//        drawGUI(g);
+    }
+
+    public void drawGUI(Graphics2D g2){
+        Font f = new Font ("Impact", Font.PLAIN, (40));
+        g2.setFont(f);
+        g2.setColor(Color.BLUE);
+        g2.drawString("Time: " + Long.toString(gm.secondsPassed),10,70);
+        g2.drawString("HP: " + Integer.toString(gm.map.getPlayer().health),10,130);
+        g2.drawString("DMG: " + Integer.toString(gm.map.getPlayer().damage),10,190);
+        g2.drawString("Score: " + Integer.toString(gm.map.getPlayer().score),10,240);
+//        g2.drawString("DIO HP: " + Integer.toString(gm.map.Dio().health),500,70);
+    }
+
+    public void drawGameOverGUI(Graphics2D g2){
+        Font f = new Font ("Impact", Font.PLAIN, (60));
+        g2.setFont(f);
+        g2.setColor(Color.BLUE);
+        g2.drawString("Time: " + Long.toString(gm.currTimeInSeconds),10,70);
+        g2.drawString("HP: " + Integer.toString(gm.map.getPlayer().health),10,130);
+        g2.drawString("DMG: " + Integer.toString(gm.map.getPlayer().damage),10,190);
+        g2.drawString("Score: " + Integer.toString(gm.map.getPlayer().score),10,240);
+//        g2.drawString("DIO HP: " + Integer.toString(gm.map.Dio().health),500,70);
+        if(gm.map.getPlayer().win) g2.drawString("you win :)",650,350);
+        else g2.drawString("you lose :)",650,350);
     }
 
 }

@@ -1,6 +1,7 @@
 package test;
 
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 
 import graphics.ScreenManager;
@@ -11,7 +12,13 @@ import graphics.ScreenManager;
 */
 public abstract class GameCore {
 
-    protected static final int FONT_SIZE = 24;
+    public static final int FONT_SIZE = 24;
+    private long elapsedTime;
+    private long startTime;
+    public long currTime;
+    public long currTimeInSeconds;
+    public int secondsPassed = 0;
+    private int tick = 0;
 
     private static final DisplayMode POSSIBLE_MODES[] = {
         new DisplayMode(800, 600, 16, 0),
@@ -103,13 +110,16 @@ public abstract class GameCore {
         Runs through the game loop until stop() is called.
     */
     public void gameLoop() {
-        long startTime = System.currentTimeMillis();
-        long currTime = startTime;
+        startTime = System.currentTimeMillis();
+        currTime = startTime;
 
         while (isRunning) {
-            long elapsedTime =
+            this.elapsedTime =
                 System.currentTimeMillis() - currTime;
             currTime += elapsedTime;
+            currTimeInSeconds = TimeUnit.MILLISECONDS.toSeconds(currTime);
+            tick++;
+            if(tick % 60 == 0) secondsPassed++;
 
             // update
             update(elapsedTime);
@@ -143,4 +153,5 @@ public abstract class GameCore {
         method.
     */
     public abstract void draw(Graphics2D g);
+
 }

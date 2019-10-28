@@ -27,7 +27,7 @@ public class Creep_Zombie extends Creature {
     }
 
     public float getMaxSpeed() {
-        return 0.6f;
+        return 0.06f;
     }
 
 

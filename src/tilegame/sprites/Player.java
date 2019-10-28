@@ -20,6 +20,7 @@ public class Player extends Creature {
     private Animation fallLeft;
 
     public int score;
+    public boolean win;
 
     public Player(
             Animation runLeft, Animation runRight,
@@ -47,6 +48,7 @@ public class Player extends Creature {
         facingRight =true;
         DIE_TIME = 1500;
         onGround = true;
+        win = false;
     }
 
     @Override
@@ -192,5 +194,10 @@ public class Player extends Creature {
 
     public float getMaxSpeed() {
         return 0.5f;
+    }
+
+    public void grace(){
+        this.x -= 15;
+        this.y -= 30;
     }
 }

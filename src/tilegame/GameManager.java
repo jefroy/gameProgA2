@@ -1,6 +1,5 @@
 package tilegame;
 
-import graphics.ScreenManager;
 import graphics.Sprite;
 import graphics.input.GameAction;
 import graphics.input.InputManager;
@@ -39,12 +38,15 @@ public class GameManager extends GameCore {
     public static final float GRAVITY = 0.002f;
 
     private Point pointCache = new Point();
-    private TileMap map;
+    public TileMap map;
     private MidiPlayer midiPlayer;
     private SoundManager soundManager;
     private ResourceManager resourceManager;
+
     private Sound prizeSound;
     private Sound boopSound;
+    private Sound oofSound;
+
     private graphics.input.InputManager inputManager;
     private TileMapRenderer renderer;
 
@@ -65,9 +67,14 @@ public class GameManager extends GameCore {
         screen.getFullScreenWindow().getGraphicsConfiguration());
 
         // load resources
-        renderer = new TileMapRenderer();
+        renderer = new TileMapRenderer(this);
         renderer.setBackground(
-            resourceManager.loadImage("environment/background.png"));
+                resourceManager.loadImage("environment/plx1.png"),
+                resourceManager.loadImage("environment/plx2.png"),
+                resourceManager.loadImage("environment/plx3.png"),
+                resourceManager.loadImage("environment/plx4.png"),
+                resourceManager.loadImage("environment/plx5.png")
+        );
 
         // load first map
         map = resourceManager.loadNextMap();
@@ -76,6 +83,7 @@ public class GameManager extends GameCore {
         soundManager = new SoundManager(PLAYBACK_FORMAT);
         prizeSound = soundManager.getSound("sounds/prize.wav");
         boopSound = soundManager.getSound("sounds/boop2.wav");
+//        oofSound = soundManager.getSound("sounds/player/oof.wav");
 
         // start music
         midiPlayer = new MidiPlayer();
@@ -87,7 +95,7 @@ public class GameManager extends GameCore {
 
 
     /**
-        Closes any resurces used by the GameManager.
+        Closes any resources used by the GameManager.
     */
     public void stop() {
         super.stop();
@@ -286,6 +294,7 @@ public class GameManager extends GameCore {
         // player is dead! start map over
         if (player.getState() == Creature.STATE_DEAD) {
             map = resourceManager.reloadMap();
+            // TODO: 28-Oct-19 game over?
             return;
         }
 
@@ -479,14 +488,32 @@ public class GameManager extends GameCore {
             Creature badguy = (Creature)collisionSprite;
             if (canKill) {
                 // kill the badguy and make player bounce
+                // add score here
                 soundManager.play(boopSound);
-                badguy.setState(Creature.STATE_DYING);
+                badguy.health -= player.damage;
+                if(badguy.health <= 0){
+                    player.score += badguy.worth;
+                    badguy.setState(Creature.STATE_DYING);
+                }
+
                 player.setY(badguy.getY() - player.getHeight());
                 player.jump(true);
             }
             else {
                 // player dies!
-                player.setState(Creature.STATE_DYING);
+//                soundManager.play(oofSound);
+                player.health -= badguy.damage;
+                if(player.health <= 0){
+                    // if the player dies while idle, game can crash
+                    if(player.health <= 0) player.setState(Creature.STATE_DYING);
+                    // TODO: 28-Oct-19 oof sound
+                }
+                else{
+                    // if the player dies while idle, game can crash
+                    player.grace();
+                    if(player.health <= 0) player.setState(Creature.STATE_DYING);
+                }
+
             }
         }
     }
@@ -516,5 +543,7 @@ public class GameManager extends GameCore {
             map = resourceManager.loadNextMap();
         }
     }
+
+
 
 }

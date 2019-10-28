@@ -30,6 +30,7 @@ public class ResourceManager {
     private Sprite flySprite;
     private Creep_Fly creep_fly;
     private Creep_Zombie creep_zombie;
+    private Player player;
     public String imgExt = ".png";
     public String imgExtGif = ".gif";
 
@@ -42,6 +43,7 @@ public class ResourceManager {
         loadTileImages();
         loadCreatureSprites();
         loadPowerUpSprites();
+        this.player = (Player) playerSprite.clone();
     }
 
     /**
@@ -209,12 +211,11 @@ public class ResourceManager {
                 else if (ch == creep_fly.tileID)
                     addSprite(newMap, creep_fly, x, y);
                 else if (ch == creep_zombie.tileID)
-                    addSprite(newMap, creep_fly, x, y);
+                    addSprite(newMap, creep_zombie, x, y);
             }
         }
 
         // add the player to the map
-        Player player = (Player) playerSprite.clone();
         player.setX(TileMapRenderer.tilesToPixels(3));
         player.setY(0);
         newMap.setPlayer(player);
@@ -391,30 +392,28 @@ public class ResourceManager {
         String path = "creeps/";
 
         String zombiePath = path + "zombie/";
-        Image idleRight = loadGif(zombiePath + "idle" + imgExtGif);
-        Image idleLeft = getMirrorImage(idleRight);
-        Image runRight = loadGif(zombiePath + "run" + imgExtGif);
-        Image runLeft = getMirrorImage(runRight);
-        Image dieL = loadGif(zombiePath + "die" + imgExtGif);
-        dieL = getFlippedImage(dieL);
-        Image dieR = getMirrorImage(dieL);
+        // load run images for player
+        int numRun = 6;
+        String playerRunPath = zombiePath + "run/";
+        Image[] playerRun = new Image[numRun];
+        Image[] playerRunLeft = new Image[numRun];
+        loadImages(playerRun, playerRunPath);
+        mirrorImages(playerRunLeft, playerRun);
+        // load run images for player
+        int numDie = 3;
+        String playerDiePath = zombiePath + "hit/";
+        Image[] playerDie = new Image[numDie];
+        Image[] playerDieLeft = new Image[numDie];
+        loadImages(playerDie, playerDiePath);
+        mirrorImages(playerDieLeft, playerDie);
 
-        Animation idleR = new Animation();
-        Animation idleL = new Animation();
-        idleR.addFrame(idleRight, 500);
-        idleL.addFrame(idleLeft, 500);
+        Animation playerRunAnim = createPlayerAnim(playerRun);
+        Animation playerRunLeftAnim = createPlayerAnim(playerRunLeft);
 
-        Animation runR = new Animation();
-        Animation runL = new Animation();
-        runR.addFrame(runRight, 500);
-        runL.addFrame(runLeft, 500);
+        Animation playerDieAnim = createGrubAnim(playerDie);
+        Animation playerDieLeftAnim = createGrubAnim(playerDieLeft);
 
-        Animation dieRight = new Animation();
-        Animation dieLeft = new Animation();
-        dieRight.addFrame(dieR, 500);
-        dieLeft.addFrame(dieL, 500);
-
-        this.creep_zombie = new Creep_Zombie(runL, runR, dieLeft, dieRight);
+        this.creep_zombie = new Creep_Zombie(playerRunLeftAnim, playerRunAnim, playerDieLeftAnim, playerDieAnim);
 
 
         int num = 5;
