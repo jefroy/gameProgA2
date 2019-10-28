@@ -3,16 +3,16 @@
 # The tiles are:
 #   (Space) Empty tile
 #   A..Z    Tiles A through Z
-#   o       Star
-#   !       Music Note
 #   *       Goal
+#   h       heart
 #   1       Bad Guy 1 (grub)
 #   2       Bad Guy 2 (fly)
 #   3       creep fly
 #   4       creep zombie
+#   5           dio 
                                                                  
 
-
+                        h               h
              3        IIIIIII      IIIIIII             2
                                                            2
          3              3            2            2  EF

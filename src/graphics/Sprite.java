@@ -14,6 +14,7 @@ public class Sprite {
     public int newHeight;
     public int newWidth;
     public char tileID;
+    public int worth;
 
     /**
         Creates a new Sprite object with the specified Animation.

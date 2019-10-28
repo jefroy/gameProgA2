@@ -34,9 +34,11 @@ public abstract class PowerUp extends Sprite {
     /**
         A Star PowerUp. Gives the player points.
     */
-    public static class Star extends PowerUp {
-        public Star(Animation anim) {
+    public static class Heart extends PowerUp {
+        public Heart(Animation anim) {
             super(anim);
+            tileID = 'h';
+            worth = 1;
         }
     }
 
@@ -47,6 +49,7 @@ public abstract class PowerUp extends Sprite {
     public static class Music extends PowerUp {
         public Music(Animation anim) {
             super(anim);
+            tileID = 'm';
         }
     }
 
@@ -57,6 +60,7 @@ public abstract class PowerUp extends Sprite {
     public static class Goal extends PowerUp {
         public Goal(Animation anim) {
             super(anim);
+            tileID = '*';
         }
     }
 

@@ -178,7 +178,9 @@ public class TileMapRenderer {
             }
         }
         // draw gui over everything
-//        drawGUI(g);
+        if(gm.resourceManager.getCurrentMap() == 4){
+            drawGameOverGUI(g);
+        }else drawGUI(g);
     }
 
     public void drawGUI(Graphics2D g2){
@@ -189,20 +191,23 @@ public class TileMapRenderer {
         g2.drawString("HP: " + Integer.toString(gm.map.getPlayer().health),10,130);
         g2.drawString("DMG: " + Integer.toString(gm.map.getPlayer().damage),10,190);
         g2.drawString("Score: " + Integer.toString(gm.map.getPlayer().score),10,240);
-//        g2.drawString("DIO HP: " + Integer.toString(gm.map.Dio().health),500,70);
+        g2.drawString("DIO HP: " + Integer.toString(gm.resourceManager.dioSprite.health),500,70);
     }
 
     public void drawGameOverGUI(Graphics2D g2){
         Font f = new Font ("Impact", Font.PLAIN, (60));
         g2.setFont(f);
         g2.setColor(Color.BLUE);
-        g2.drawString("Time: " + Long.toString(gm.currTimeInSeconds),10,70);
+        g2.drawString("Time: " + Long.toString(gm.doneTime),10,70);
         g2.drawString("HP: " + Integer.toString(gm.map.getPlayer().health),10,130);
         g2.drawString("DMG: " + Integer.toString(gm.map.getPlayer().damage),10,190);
         g2.drawString("Score: " + Integer.toString(gm.map.getPlayer().score),10,240);
 //        g2.drawString("DIO HP: " + Integer.toString(gm.map.Dio().health),500,70);
-        if(gm.map.getPlayer().win) g2.drawString("you win :)",650,350);
-        else g2.drawString("you lose :)",650,350);
+        if(gm.map.getPlayer().win) g2.drawString("you win :)",450,250);
+        else{
+            g2.drawString("you lose :(",450,250);
+            g2.drawString("plz kill dio!",450,350);
+        }
     }
 
 }

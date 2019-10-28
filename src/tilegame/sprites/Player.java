@@ -20,6 +20,9 @@ public class Player extends Creature {
     private Animation fallLeft;
 
     public int score;
+    public int up1;
+    public int up2;
+    public int up3;
     public boolean win;
     public int maxHP;
 
@@ -51,6 +54,11 @@ public class Player extends Creature {
         DIE_TIME = 1500;
         onGround = true;
         win = false;
+        speed = 0.5f;
+
+        up1 = 10;
+        up2 = 20;
+        up3 = 30;
     }
 
     @Override
@@ -195,7 +203,7 @@ public class Player extends Creature {
     }
 
     public float getMaxSpeed() {
-        return 0.5f;
+        return this.speed;
     }
 
     public void grace(){
@@ -206,8 +214,32 @@ public class Player extends Creature {
     // player dies, reset score
     public void resetStats(){
         System.out.println("did u die? resetting stats.");
-        this.score = 0;
+//        this.score = 0;
         this.health = maxHP;
 //        this.state = STATE_NORMAL;
+    }
+
+    public void upgrade1(){
+        this.maxHP += 3;
+        this.damage += 1;
+        health = maxHP;
+        up1 = -1;
+        System.out.println("upgraded player 1");
+    }
+    public void upgrade2(){
+        this.maxHP += 2;
+        this.damage += 1;
+        this.speed += 0.1f;
+        health = maxHP;
+        up2 = -1;
+        System.out.println("upgraded player 2");
+    }
+    public void upgrade3(){
+        this.maxHP += 2;
+        this.damage += 1;
+        this.speed += 0.1f;
+        health = maxHP;
+        up3 = -1;
+        System.out.println("upgraded player 3");
     }
 }

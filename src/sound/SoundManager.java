@@ -1,10 +1,10 @@
 package sound;
 
-import java.io.*;
-import javax.sound.sampled.*;
-import javax.sound.midi.*;
-import util.ThreadPool;
 import util.LoopingByteInputStream;
+import util.ThreadPool;
+
+import javax.sound.sampled.*;
+import java.io.*;
 
 
 /**

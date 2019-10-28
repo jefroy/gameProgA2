@@ -7,9 +7,6 @@ import graphics.Animation;
 */
 public class Creep_Fly extends Creature {
 
-    private int id;
-    private static int idCounter = 0;
-
     public Creep_Fly(Animation left, Animation right,
                      Animation deadLeft, Animation deadRight)
     {
@@ -17,20 +14,27 @@ public class Creep_Fly extends Creature {
         damage = 1;
         newHeight = 48;
         newWidth = 64;
-        id = idCounter;
-        idCounter++;
         health = 2;
         worth = health;
         tileID = '3';
+        this.speed = 0.2f;
     }
 
     public float getMaxSpeed() {
-        return 0.3f;
+        return speed;
     }
-
 
     public boolean isFlying() {
         return isAlive();
+    }
+
+    public void upgrade(){
+        this.health += 1;
+        this.damage += 1;
+        this.worth = this.health;
+        this.speed += 0.1f;
+        this.up = -1;
+        System.out.println("upgraded fly");
     }
 
 }

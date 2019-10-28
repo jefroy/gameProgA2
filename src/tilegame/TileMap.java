@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 
 import graphics.Sprite;
+import tilegame.sprites.Dio;
 import tilegame.sprites.Player;
 
 /**
@@ -18,6 +19,7 @@ public class TileMap {
     private Image[][] tiles;
     private LinkedList sprites;
     private Player player;
+//    private Dio dio;
 
     /**
         Creates a new TileMap with the specified width and

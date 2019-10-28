@@ -34,8 +34,10 @@ public abstract class Creature extends Sprite {
     public boolean facingLeft;
     public boolean facingRight;
     public int health;
-    public int worth;
     public int damage;
+    public float speed;
+    public int upTime; // time in seconds to upgrade mobs
+    public int up;
 
 
     /**
@@ -52,6 +54,8 @@ public abstract class Creature extends Sprite {
         this.deadLeft = deadLeft;
         this.deadRight = deadRight;
         state = STATE_NORMAL;
+        upTime = 30; // after 30 seconds, upgrade all baddies
+        up = 0;
     }
 
 

@@ -23,9 +23,10 @@ public class ResourceManager {
 
     // host sprites used for cloning
     public Player playerSprite;
+    public Dio dioSprite;
     public Player player;
     private Sprite musicSprite;
-    private Sprite starSprite;
+    private Sprite heartSprite;
     private Sprite goalSprite;
     private Sprite grubSprite;
     private Sprite flySprite;
@@ -140,6 +141,9 @@ public class ResourceManager {
         return map;
     }
 
+    public int getCurrentMap() {
+        return currentMap;
+    }
 
     public TileMap reloadMap() {
         try {
@@ -191,27 +195,23 @@ public class ResourceManager {
                 if (tile >= 0 && tile < tiles.size()) {
                     newMap.setTile(x, y, (Image)tiles.get(tile));
                 }
-
                 // check if the char represents a sprite
-                else if (ch == 'o') {
-                    addSprite(newMap, starSprite, x, y);
-                }
-                else if (ch == '!') {
-                    addSprite(newMap, musicSprite, x, y);
-                }
-                else if (ch == '*') {
-                    addSprite(newMap, goalSprite, x, y);
-                }
-                else if (ch == '1') {
+                else if (ch == grubSprite.tileID)
                     addSprite(newMap, grubSprite, x, y);
-                }
-                else if (ch == '2') {
+                else if (ch == flySprite.tileID)
                     addSprite(newMap, flySprite, x, y);
-                }
                 else if (ch == creep_fly.tileID)
                     addSprite(newMap, creep_fly, x, y);
                 else if (ch == creep_zombie.tileID)
                     addSprite(newMap, creep_zombie, x, y);
+                else if (ch == dioSprite.tileID)
+                    addSprite(newMap, dioSprite, x, y);
+                else if (ch == heartSprite.tileID)
+                    addSprite(newMap, heartSprite, x, y);
+                else if (ch == musicSprite.tileID)
+                    addSprite(newMap, musicSprite, x, y);
+                else if (ch == goalSprite.tileID)
+                    addSprite(newMap, goalSprite, x, y);
             }
         }
 
@@ -363,6 +363,51 @@ public class ResourceManager {
         );
     }
 
+    private void loadDio(){
+        // note: all the player images are facing right!
+
+        // load idle images for player
+        // has 4 images, images/player/idle/1.png
+        int numIdle = 3; // attack
+        String playerIdlePath = "dio/attack/";
+        Image[] playerIdle = new Image[numIdle];
+        Image[] playerIdleLeft = new Image[numIdle];
+        loadImages(playerIdle, playerIdlePath);
+        mirrorImages(playerIdleLeft, playerIdle); // this function will mirror the images in the second array, into the first array
+        // load run images for player
+        int numRun = 8;
+        String playerRunPath = "dio/run/";
+        Image[] playerRun = new Image[numRun];
+        Image[] playerRunLeft = new Image[numRun];
+        loadImages(playerRun, playerRunPath);
+        mirrorImages(playerRunLeft, playerRun);
+        // load run images for player
+        int numDie = 6;
+        String playerDiePath = "dio/die/";
+        Image[] playerDie = new Image[numDie];
+        Image[] playerDieLeft = new Image[numDie];
+        loadImages(playerDie, playerDiePath);
+        mirrorImages(playerDieLeft, playerDie);
+        //load jump images
+
+        // now make animations
+        Animation playerIdleAnim = createPlayerAnim(playerIdle); // attack
+        Animation playerIdleLeftAnim = createPlayerAnim(playerIdleLeft);
+
+        Animation playerRunAnim = createPlayerAnim(playerRun);
+        Animation playerRunLeftAnim = createPlayerAnim(playerRunLeft);
+
+        Animation playerDieAnim = createGrubAnim(playerDie);
+        Animation playerDieLeftAnim = createGrubAnim(playerDieLeft);
+
+
+        dioSprite = new Dio(
+                playerRunLeftAnim, playerRunAnim,
+                playerDieLeftAnim, playerDieAnim,
+                playerIdleLeftAnim, playerIdleAnim
+        );
+    }
+
     private void loadFly(){
         // note: all the fly images are facing left
         int num = 3;
@@ -472,8 +517,8 @@ public class ResourceManager {
         loadPlayer(); // check jump anim
         loadFly();
         loadGrub();
-        // TODO: 22-Oct-19 loadDio(); 
-        // TODO: 22-Oct-19 make minions
+        loadDio();
+        // TODO: 22-Oct-19 loadDio();
         loadCreeps();
         System.out.println("loadCreatureSprites successfully executed.");
 
@@ -510,17 +555,17 @@ public class ResourceManager {
 
     private void loadGoalSprite(){
         String path = "drops/goal/";
-        int num = 3;
+        int num = 4;
         Animation anim = new Animation();
         for (int i = 0; i < num; i++) anim.addFrame(loadImage(path + i + imgExt), 150);
         goalSprite = new PowerUp.Goal(anim);
     }
-    private void loadStarSprite(){
-        String path = "drops/star/";
-        int num = 4;
+    private void loadHeartSprite(){
+        String path = "drops/heart/";
+        int num = 3;
         Animation anim = new Animation();
         for (int i = 0; i < num; i++) anim.addFrame(loadImage(path + i + imgExt), 150);
-        starSprite = new PowerUp.Star(anim);
+        heartSprite = new PowerUp.Heart(anim);
     }
     private void loadMusicSprite(){
         String path = "drops/music/";
@@ -534,7 +579,7 @@ public class ResourceManager {
         // create "goal" sprite
         loadGoalSprite();
         loadMusicSprite();
-        loadStarSprite();
+        loadHeartSprite();
         System.out.println("loadPowerUpSprites successfully executed.");
     }
 

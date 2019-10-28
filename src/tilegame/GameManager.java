@@ -3,14 +3,9 @@ package tilegame;
 import graphics.Sprite;
 import graphics.input.GameAction;
 import graphics.input.InputManager;
-import sound.EchoFilter;
-import sound.MidiPlayer;
-import sound.Sound;
-import sound.SoundManager;
+import sound.*;
 import test.GameCore;
-import tilegame.sprites.Creature;
-import tilegame.sprites.Player;
-import tilegame.sprites.PowerUp;
+import tilegame.sprites.*;
 
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
@@ -24,6 +19,8 @@ import java.util.Iterator;
     GameManager manages all parts of the game.
 */
 public class GameManager extends GameCore {
+
+    public int doneTime;
 
     public static void main(String[] args) {
         new GameManager().run();
@@ -41,7 +38,8 @@ public class GameManager extends GameCore {
     public TileMap map;
     private MidiPlayer midiPlayer;
     private SoundManager soundManager;
-    private ResourceManager resourceManager;
+    private AudioHandler audioHandler;
+    public ResourceManager resourceManager;
 
     private Sound prizeSound;
     private Sound boopSound;
@@ -389,6 +387,15 @@ public class GameManager extends GameCore {
             checkPlayerCollision((Player)creature, canKill);
         }
 
+        // upgrade all mobs after the time limit as passed
+        if(secondsPassed >= creature.upTime){
+            if(creature instanceof Creep_Zombie && creature.up != -1) ((Creep_Zombie) creature).upgrade();
+            if(creature instanceof Creep_Fly && creature.up != -1) ((Creep_Fly) creature).upgrade();
+            if(creature instanceof Dio && creature.up != -1) ((Dio) creature).upgrade();
+        }
+
+        if(creature instanceof Dio && creature.health <= 10 && !((Dio) creature).isEnraged) ((Dio) creature).enrage();
+
     }
 
     /**
@@ -463,6 +470,10 @@ public class GameManager extends GameCore {
             checkPlayerCollision((Player)player, canKill);
         }
 
+        if(player.score >= player.up1 && player.up1 != -1) player.upgrade1();
+        if(player.score >= player.up2 && player.up2 != -1) player.upgrade2();
+        if(player.score >= player.up3 && player.up3 != -1) player.upgrade3();
+
     }
 
 
@@ -493,6 +504,10 @@ public class GameManager extends GameCore {
                 if(badguy.health <= 0){
                     player.score += badguy.worth;
                     badguy.setState(Creature.STATE_DYING);
+                    if(badguy instanceof Dio){
+                        player.win = true;
+                        doneTime = this.secondsPassed;
+                    }
                 }
 
                 player.setY(badguy.getY() - player.getHeight());
@@ -525,8 +540,9 @@ public class GameManager extends GameCore {
         // remove it from the map
         map.removeSprite(powerUp);
 
-        if (powerUp instanceof PowerUp.Star) {
+        if (powerUp instanceof PowerUp.Heart) {
             // do something here, like give the player points
+            this.map.getPlayer().health += powerUp.worth;
             soundManager.play(prizeSound);
         }
         else if (powerUp instanceof PowerUp.Music) {
